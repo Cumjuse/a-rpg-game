@@ -1,0 +1,15 @@
+{
+  "name": "rpg-game-site",
+  "version": "1.0.0",
+  "description": "A RPG Game Site with KeyAuth integration",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "keyauth-js": "^1.1.2",
+    "vite": "^5.0.0"
+  }
+}
