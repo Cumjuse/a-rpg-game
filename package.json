@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "keyauth-js": "^1.1.2",
+    "@keyauth/keyauth-js": "^1.1.2",
     "vite": "^5.0.0"
   }
 }
