@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - A RPG Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <a href="/" class="nav-logo">A RPG Game</a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Início</a>
+                <a href="/login.html" class="nav-link">Login</a>
+            </div>
+        </nav>
+    </header>
+
+    <div id="alert-container"></div>
+
+    <main class="container">
+        <div class="form-container slide-up">
+            <h2 class="form-title">Cadastro</h2>
+            
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="username" class="form-label">Nome de usuário</label>
+                    <input type="text" id="username" name="username" class="form-input" required minlength="3" maxlength="50">
+                    <small>Seu nome de usuário será usado para acessar seu perfil público.</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Senha</label>
+                    <input type="password" id="password" name="password" class="form-input" required minlength="6">
+                    <small>Mínimo de 6 caracteres.</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm-password" class="form-label">Confirmar Senha</label>
+                    <input type="password" id="confirm-password" name="confirm-password" class="form-input" required>
+                </div>
+                
+                <button type="submit" class="btn btn-block">Cadastrar</button>
+            </form>
+            
+            <div class="form-footer">
+                <p>Já tem uma conta? <a href="/login.html">Faça login</a></p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 A RPG Game. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script>
+        // Validação adicional para o formulário de cadastro
+        document.addEventListener('DOMContentLoaded', () => {
+            const registerForm = document.getElementById('register-form');
+            if (registerForm) {
+                registerForm.addEventListener('submit', function(e) {
+                    const password = document.getElementById('password').value;
+                    const confirmPassword = document.getElementById('confirm-password').value;
+                    
+                    if (password !== confirmPassword) {
+                        e.preventDefault();
+                        showAlert('As senhas não coincidem', 'error');
+                        return false;
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

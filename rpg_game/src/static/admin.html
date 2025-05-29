@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - A RPG Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <a href="/" class="nav-logo">A RPG Game</a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Início</a>
+                <a href="/profile.html" class="nav-link">Meu Perfil</a>
+                <a href="/edit-profile.html" class="nav-link">Editar Perfil</a>
+                <a href="#" class="nav-link logout-btn" id="logout-btn">Sair</a>
+            </div>
+        </nav>
+    </header>
+
+    <div id="alert-container"></div>
+
+    <main class="container">
+        <div class="admin-container fade-in">
+            <h2 class="admin-title">Painel Administrativo</h2>
+            
+            <div class="admin-section">
+                <h3>Gerenciamento de Usuários</h3>
+                <table class="admin-table" id="user-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuário</th>
+                            <th>Likes</th>
+                            <th>Banido</th>
+                            <th>Data de Cadastro</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="6">Carregando usuários...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="admin-section">
+                <h3>Verificação de KeyAuth</h3>
+                <div class="form-group">
+                    <label for="admin-key" class="form-label">Chave de Administrador</label>
+                    <input type="password" id="admin-key" class="form-input">
+                    <button type="button" class="btn" id="verify-key-btn">Verificar Chave</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 A RPG Game. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Verificar autenticação
+            const user = getSessionUser();
+            if (!user) {
+                window.location.href = '/login.html';
+                return;
+            }
+            
+            // Verificar se é admin
+            if (!user.is_admin) {
+                document.querySelector('.admin-container').innerHTML = `
+                    <h2 class="admin-title">Acesso Negado</h2>
+                    <p>Você não tem permissão para acessar esta página.</p>
+                    <a href="/" class="btn">Voltar para o Início</a>
+                `;
+                return;
+            }
+            
+            // Carregar lista de usuários
+            try {
+                await loadAdminPanel();
+            } catch (error) {
+                console.error('Erro ao carregar painel admin:', error);
+                showAlert('Erro ao carregar dados administrativos', 'error');
+            }
+            
+            // Configurar verificação de chave admin
+            const verifyKeyBtn = document.getElementById('verify-key-btn');
+            if (verifyKeyBtn) {
+                verifyKeyBtn.addEventListener('click', () => {
+                    const adminKey = document.getElementById('admin-key').value;
+                    
+                    // Simulação de verificação de chave admin
+                    if (adminKey === user.key_auth) {
+                        showAlert('Chave de administrador verificada com sucesso!', 'success');
+                    } else {
+                        showAlert('Chave de administrador inválida!', 'error');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

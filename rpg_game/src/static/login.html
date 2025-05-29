@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - A RPG Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/security.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <a href="/" class="nav-logo">A RPG Game</a>
+            <div class="nav-links">
+                <a href="/register.html" class="nav-link">Cadastro</a>
+            </div>
+        </nav>
+    </header>
+
+    <div id="alert-container"></div>
+
+    <main class="container">
+        <div class="form-container slide-up">
+            <h2 class="form-title">Login</h2>
+            
+            <form id="login-form" class="form-protected">
+                <div class="form-group">
+                    <label for="username" class="form-label">Nome de usuário</label>
+                    <input type="text" id="username" name="username" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Senha</label>
+                    <input type="password" id="password" name="password" class="form-input" required>
+                </div>
+                
+                <button type="submit" class="btn btn-block pulse">Entrar</button>
+            </form>
+            
+            <div class="form-footer">
+                <p>Não tem uma conta? <a href="/register.html">Cadastre-se</a></p>
+            </div>
+        </div>
+        
+        <div class="login-info fade-in">
+            <h3>Acesso Exclusivo</h3>
+            <p>Faça login para acessar conteúdo exclusivo, incluindo:</p>
+            <ul>
+                <li><i class="fas fa-star"></i> Spoilers do jogo</li>
+                <li><i class="fas fa-users"></i> Lista de jogadores</li>
+                <li><i class="fas fa-user-edit"></i> Perfil personalizado</li>
+            </ul>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 A RPG Game. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/security.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Verificar se o usuário já está logado
+            const user = getSessionUser();
+            if (user) {
+                window.location.href = '/';
+                return;
+            }
+            
+            // Configurar animações adicionais
+            const formContainer = document.querySelector('.form-container');
+            formContainer.classList.add('fade-in');
+            
+            setTimeout(() => {
+                const inputs = document.querySelectorAll('.form-input');
+                inputs.forEach((input, index) => {
+                    setTimeout(() => {
+                        input.classList.add('slide-up');
+                    }, index * 100);
+                });
+            }, 500);
+        });
+    </script>
+</body>
+</html>

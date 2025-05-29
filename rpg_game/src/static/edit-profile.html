@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Perfil - A RPG Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/security.css">
+    <link rel="stylesheet" href="/css/animations.css">
+    <style>
+        .profile-image-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .profile-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        .image-upload-container {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+        }
+        
+        .custom-file-upload {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background-color: var(--card-background);
+            color: var(--text-color);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .custom-file-upload:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .custom-file-upload i {
+            font-size: 18px;
+        }
+        
+        #profile-image {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .upload-preview {
+            margin-top: 15px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .key-auth-display {
+            padding: 12px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: var(--border-radius);
+            font-family: monospace;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        
+        .key-auth-display.visible {
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        
+        .upload-progress-container {
+            width: 100%;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .upload-progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .profile-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .profile-actions .btn {
+            flex: 1;
+        }
+        
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+        }
+        
+        /* Animações para feedback visual */
+        @keyframes successPulse {
+            0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+        }
+        
+        .success-pulse {
+            animation: successPulse 1.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-transition"></div>
+    
+    <header class="header">
+        <nav class="nav">
+            <a href="/" class="nav-logo">A RPG Game</a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Início</a>
+                <a href="/spoilers.html" class="nav-link">Spoilers</a>
+                <a href="/users.html" class="nav-link">Usuários</a>
+                <a href="/profile.html" class="nav-link">Meu Perfil</a>
+                <a href="/edit-profile.html" class="nav-link active">Editar Perfil</a>
+                <a href="/admin.html" class="nav-link admin-link" style="display: none;">Admin</a>
+                <a href="#" class="nav-link logout-btn" id="logout-btn">Sair</a>
+            </div>
+        </nav>
+    </header>
+
+    <div id="alert-container"></div>
+
+    <main class="container">
+        <h1 class="form-title slide-up">Editar Perfil</h1>
+        
+        <div class="form-container slide-up">
+            <form id="profile-form">
+                <div class="profile-image-container">
+                    <img src="/img/default.png" alt="Foto de Perfil" id="preview-image" class="profile-image">
+                    
+                    <div class="image-upload-container">
+                        <label for="profile-image" class="custom-file-upload">
+                            <i class="fas fa-camera"></i>
+                            <span>Escolher nova foto</span>
+                        </label>
+                        <input type="file" id="profile-image" name="profile-image" accept="image/*">
+                        <div class="upload-preview" id="file-name">Nenhum arquivo selecionado</div>
+                        <div class="upload-progress-container" id="upload-progress-container">
+                            <div class="upload-progress-bar" id="upload-progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="username" class="form-label">Nome de usuário</label>
+                    <input type="text" id="username" name="username" class="form-input" disabled>
+                    <small>O nome de usuário não pode ser alterado.</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description" class="form-label">Descrição</label>
+                    <textarea id="description" name="description" class="form-input" rows="5" placeholder="Conte um pouco sobre você..."></textarea>
+                    <small>Máximo de 500 caracteres</small>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Key Auth</label>
+                    <div class="key-auth-display" id="key-auth-display">••••••••••••••••</div>
+                    <button type="button" class="btn btn-small" id="show-key-btn">
+                        <i class="fas fa-eye"></i> Mostrar/Ocultar Key
+                    </button>
+                </div>
+                
+                <div class="profile-actions">
+                    <button type="button" class="btn" id="cancel-btn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 A RPG Game. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/security.js"></script>
+    <script src="/js/animations.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Verificar autenticação
+            const user = getSessionUser();
+            if (!user) {
+                window.location.href = '/login.html';
+                return;
+            }
+            
+            // Atualizar links de navegação
+            const adminLink = document.querySelector('.admin-link');
+            if (adminLink && user.is_admin) {
+                adminLink.style.display = 'inline-block';
+            }
+            
+            // Elementos do DOM
+            const usernameInput = document.getElementById('username');
+            const descriptionInput = document.getElementById('description');
+            const previewImage = document.getElementById('preview-image');
+            const profileImageInput = document.getElementById('profile-image');
+            const fileNameDisplay = document.getElementById('file-name');
+            const keyAuthDisplay = document.getElementById('key-auth-display');
+            const showKeyBtn = document.getElementById('show-key-btn');
+            const profileForm = document.getElementById('profile-form');
+            const cancelBtn = document.getElementById('cancel-btn');
+            const uploadProgressContainer = document.getElementById('upload-progress-container');
+            const uploadProgressBar = document.getElementById('upload-progress-bar');
+            
+            // Preencher campos do formulário
+            usernameInput.value = user.username;
+            
+            try {
+                // Carregar dados do perfil
+                const profile = await fetchUserProfile(user.username);
+                
+                // Preencher descrição
+                if (profile.description) {
+                    descriptionInput.value = profile.description;
+                }
+                
+                // Mostrar imagem de perfil
+                if (profile.profile_image) {
+                    previewImage.src = `/img/${profile.profile_image}`;
+                }
+                
+                // Configurar visualização da key
+                showKeyBtn.addEventListener('click', () => {
+                    if (keyAuthDisplay.textContent === user.key_auth) {
+                        keyAuthDisplay.textContent = '••••••••••••••••';
+                        keyAuthDisplay.classList.remove('visible');
+                    } else {
+                        keyAuthDisplay.textContent = user.key_auth;
+                        keyAuthDisplay.classList.add('visible');
+                    }
+                });
+                
+                // Configurar preview de imagem
+                profileImageInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        // Atualizar nome do arquivo
+                        fileNameDisplay.textContent = file.name;
+                        
+                        // Mostrar preview
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            previewImage.src = e.target.result;
+                            previewImage.classList.add('pulse');
+                            setTimeout(() => previewImage.classList.remove('pulse'), 1000);
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        fileNameDisplay.textContent = 'Nenhum arquivo selecionado';
+                    }
+                });
+                
+                // Configurar botão de cancelar
+                cancelBtn.addEventListener('click', () => {
+                    if (confirm('Tem certeza que deseja cancelar as alterações?')) {
+                        window.location.href = '/profile.html';
+                    }
+                });
+                
+                // Configurar envio do formulário
+                profileForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    const description = descriptionInput.value.trim();
+                    const profileImage = profileImageInput.files[0];
+                    
+                    try {
+                        // Validar descrição
+                        if (description.length > 500) {
+                            showAlert('A descrição não pode ter mais de 500 caracteres', 'error');
+                            return;
+                        }
+                        
+                        // Atualizar descrição
+                        await updateUserProfile({ description });
+                        
+                        // Se houver imagem, fazer upload
+                        if (profileImage) {
+                            // Mostrar barra de progresso
+                            uploadProgressContainer.style.display = 'block';
+                            
+                            // Simular upload com progresso
+                            await simulateFileUpload(profileImage, (progress) => {
+                                uploadProgressBar.style.width = `${progress}%`;
+                            });
+                            
+                            // Atualizar imagem no perfil do usuário
+                            await updateUserProfileImage(profileImage);
+                            
+                            // Adicionar efeito visual de sucesso
+                            previewImage.classList.add('success-pulse');
+                            setTimeout(() => previewImage.classList.remove('success-pulse'), 2000);
+                        }
+                        
+                        showAlert('Perfil atualizado com sucesso!', 'success');
+                        
+                        // Redirecionar para a página de perfil após 1.5 segundos
+                        setTimeout(() => {
+                            window.location.href = '/profile.html';
+                        }, 1500);
+                    } catch (error) {
+                        console.error('Erro ao atualizar perfil:', error);
+                        showAlert('Erro ao atualizar perfil. Tente novamente.', 'error');
+                    }
+                });
+            } catch (error) {
+                console.error('Erro ao carregar perfil:', error);
+                showAlert('Erro ao carregar dados do perfil', 'error');
+            }
+        });
+        
+        // Função para buscar perfil do usuário
+        async function fetchUserProfile(username) {
+            // Simular delay de rede
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            // Em um ambiente real, isso seria uma chamada à API
+            // Retornar dados simulados para demonstração
+            return {
+                username: username,
+                description: 'Olá! Sou um jogador apaixonado por RPG e aventuras. Adoro explorar mundos fantásticos e criar histórias épicas com meus personagens.',
+                profile_image: 'default.png',
+                created_at: '2025-01-15T10:30:00Z',
+                likes: 42
+            };
+        }
+        
+        // Função para atualizar perfil do usuário
+        async function updateUserProfile(data) {
+            // Simular delay de rede
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Em um ambiente real, isso seria uma chamada à API
+            console.log('Perfil atualizado:', data);
+            
+            // Simular sucesso ou falha aleatória (95% de sucesso)
+            const isSuccess = Math.random() > 0.05;
+            
+            if (!isSuccess) {
+                throw new Error('Falha na atualização do perfil');
+            }
+            
+            return { success: true };
+        }
+        
+        // Função para atualizar imagem de perfil
+        async function updateUserProfileImage(file) {
+            // Em um ambiente real, isso seria um upload de arquivo para o servidor
+            console.log('Arquivo para upload:', file.name, file.type, file.size);
+            
+            // Simular sucesso ou falha aleatória (90% de sucesso)
+            const isSuccess = Math.random() > 0.1;
+            
+            if (!isSuccess) {
+                throw new Error('Falha no upload da imagem');
+            }
+            
+            // Atualizar o usuário na sessão para refletir a nova imagem
+            const user = getSessionUser();
+            if (user) {
+                user.profile_image = file.name;
+                setSessionUser(user);
+            }
+            
+            return { success: true, filename: file.name };
+        }
+        
+        // Função para simular upload de arquivo com progresso
+        async function simulateFileUpload(file, progressCallback) {
+            const totalSteps = 10;
+            const stepTime = 200;
+            
+            for (let step = 1; step <= totalSteps; step++) {
+                await new Promise(resolve => setTimeout(resolve, stepTime));
+                const progress = Math.round((step / totalSteps) * 100);
+                progressCallback(progress);
+            }
+        }
+    </script>
+</body>
+</html>

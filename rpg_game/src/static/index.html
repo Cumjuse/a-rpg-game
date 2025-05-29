@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A RPG Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/security.css">
+    <link rel="stylesheet" href="/css/animations.css">
+</head>
+<body>
+    <div class="page-transition"></div>
+    
+    <header class="header">
+        <nav class="nav">
+            <a href="/" class="nav-logo">A RPG Game</a>
+            <div class="nav-links">
+                <a href="/" class="nav-link active">Início</a>
+                <a href="/spoilers.html" class="nav-link">Spoilers</a>
+                <a href="/users.html" class="nav-link">Usuários</a>
+                <a href="/profile.html" class="nav-link">Meu Perfil</a>
+                <a href="/edit-profile.html" class="nav-link">Editar Perfil</a>
+                <a href="/admin.html" class="nav-link admin-link" style="display: none;">Admin</a>
+                <a href="#" class="nav-link logout-btn" id="logout-btn">Sair</a>
+            </div>
+        </nav>
+    </header>
+
+    <div id="alert-container"></div>
+
+    <main class="container">
+        <h1 class="form-title slide-up">Bem-vindo ao A RPG Game</h1>
+        
+        <div class="welcome-message fade-in">
+            <h2><span class="username-display">Aventureiro</span>, sua jornada continua!</h2>
+            <p>Este é um espaço exclusivo para membros. Explore as diferentes seções e descubra segredos do jogo.</p>
+        </div>
+        
+        <div class="dashboard-cards">
+            <div class="dashboard-card slide-up animate-on-scroll">
+                <i class="fas fa-scroll fa-3x"></i>
+                <h3>Spoilers</h3>
+                <p>Descubra segredos e novidades sobre o jogo antes de todos.</p>
+                <a href="/spoilers.html" class="btn">Explorar</a>
+            </div>
+            
+            <div class="dashboard-card slide-up animate-on-scroll" style="animation-delay: 0.2s;">
+                <i class="fas fa-users fa-3x"></i>
+                <h3>Comunidade</h3>
+                <p>Conheça outros jogadores e visite seus perfis.</p>
+                <a href="/users.html" class="btn">Conhecer</a>
+            </div>
+            
+            <div class="dashboard-card slide-up animate-on-scroll" style="animation-delay: 0.4s;">
+                <i class="fas fa-user-edit fa-3x"></i>
+                <h3>Seu Perfil</h3>
+                <p>Personalize seu perfil e compartilhe sua história.</p>
+                <a href="/profile.html" class="btn">Personalizar</a>
+            </div>
+        </div>
+
+        <div class="game-updates fade-in animate-on-scroll">
+            <h2>Últimas Atualizações</h2>
+            <div class="update-item">
+                <span class="update-date">29/05/2025</span>
+                <h3>Nova Área de Exploração</h3>
+                <p>Uma nova masmorra foi descoberta nas Montanhas do Norte. Prepare sua equipe para enfrentar desafios nunca vistos antes!</p>
+            </div>
+            <div class="update-item">
+                <span class="update-date">15/05/2025</span>
+                <h3>Balanceamento de Classes</h3>
+                <p>Ajustes foram feitos nas habilidades dos Magos e Guerreiros para garantir uma experiência mais equilibrada.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 A RPG Game. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/security.js"></script>
+    <script src="/js/animations.js"></script>
+    <script>
+        // Verificar autenticação e redirecionar se não estiver logado
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = getSessionUser();
+            
+            if (!user) {
+                // Usuário não autenticado, redirecionar para login
+                window.location.href = '/login.html';
+                return;
+            }
+            
+            // Atualizar nome de usuário na mensagem de boas-vindas
+            const usernameDisplay = document.querySelector('.username-display');
+            if (usernameDisplay && user.username) {
+                usernameDisplay.textContent = user.username;
+            }
+            
+            // Mostrar link de admin se for administrador
+            const adminLink = document.querySelector('.admin-link');
+            if (adminLink && user.is_admin) {
+                adminLink.style.display = 'inline-block';
+            }
+        });
+    </script>
+</body>
+</html>

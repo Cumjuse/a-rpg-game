@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil - A RPG Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/security.css">
+    <link rel="stylesheet" href="/css/animations.css">
+    <style>
+        .profile-container {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: var(--box-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            animation: slideIn 0.8s ease-in-out;
+        }
+        
+        .profile-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        .profile-info {
+            flex: 1;
+            min-width: 250px;
+            animation: slideUp 0.8s ease-in-out;
+        }
+        
+        .profile-username {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .profile-username:after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+        
+        .profile-username:hover:after {
+            width: 100%;
+        }
+        
+        .profile-stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .profile-stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+        }
+        
+        .profile-stat:hover {
+            color: var(--text-color);
+            transform: translateY(-2px);
+        }
+        
+        .profile-stat i {
+            color: var(--primary-color);
+        }
+        
+        .profile-description {
+            line-height: 1.6;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: var(--border-radius);
+            border-left: 3px solid var(--primary-color);
+            animation: fadeIn 1s ease-in-out;
+            animation-delay: 0.3s;
+            animation-fill-mode: both;
+        }
+        
+        .profile-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            animation: slideUp 0.8s ease-in-out;
+            animation-delay: 0.5s;
+            animation-fill-mode: both;
+        }
+        
+        .profile-actions .btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .like-button {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .like-button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: all 0.5s ease;
+            z-index: -1;
+        }
+        
+        .like-button:hover:before {
+            left: 100%;
+        }
+        
+        .like-button.liked {
+            background-color: var(--primary-color);
+            cursor: default;
+        }
+        
+        .like-button.liked i {
+            color: #fff;
+        }
+        
+        /* Animação para o coração */
+        @keyframes heartBeat {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.3); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.3); }
+            70% { transform: scale(1); }
+        }
+        
+        .heart-beat {
+            animation: heartBeat 1s ease-in-out;
+        }
+        
+        /* Indicador de status online */
+        .online-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            margin-left: 15px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .status-online {
+            background-color: #4CAF50;
+            box-shadow: 0 0 5px #4CAF50;
+        }
+        
+        .status-offline {
+            background-color: #9e9e9e;
+        }
+        
+        /* Badges e conquistas */
+        .profile-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            animation: fadeIn 1s ease-in-out;
+            animation-delay: 0.7s;
+            animation-fill-mode: both;
+        }
+        
+        .profile-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .profile-badge:hover {
+            background-color: rgba(0, 0, 0, 0.5);
+            transform: translateY(-3px);
+        }
+        
+        .profile-badge i {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="page-transition"></div>
+    
+    <header class="header">
+        <nav class="nav">
+            <a href="/" class="nav-logo">A RPG Game</a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Início</a>
+                <a href="/spoilers.html" class="nav-link">Spoilers</a>
+                <a href="/users.html" class="nav-link">Usuários</a>
+                <a href="/profile.html" class="nav-link">Meu Perfil</a>
+                <a href="/edit-profile.html" class="nav-link">Editar Perfil</a>
+                <a href="/admin.html" class="nav-link admin-link" style="display: none;">Admin</a>
+                <a href="#" class="nav-link logout-btn" id="logout-btn">Sair</a>
+            </div>
+        </nav>
+    </header>
+
+    <div id="alert-container"></div>
+
+    <main class="container">
+        <h1 class="form-title slide-up">Perfil do Jogador</h1>
+        
+        <div class="profile-container">
+            <div class="profile-header">
+                <img src="/img/default.png" alt="Foto de Perfil" class="profile-image" id="profile-image">
+                <div class="profile-info">
+                    <h2 class="profile-username" id="profile-username">Carregando...</h2>
+                    <div class="online-status" id="online-status">
+                        <span class="status-indicator status-offline" id="status-indicator"></span>
+                        <span id="status-text">Offline</span>
+                    </div>
+                    <div class="profile-stats">
+                        <div class="profile-stat">
+                            <i class="fas fa-heart"></i>
+                            <span id="profile-likes">0</span> likes
+                        </div>
+                        <div class="profile-stat">
+                            <i class="fas fa-calendar"></i>
+                            Membro desde <span id="profile-date">--/--/----</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="profile-badges" id="profile-badges">
+                <!-- Badges serão adicionadas dinamicamente -->
+            </div>
+            
+            <div class="profile-description" id="profile-description">
+                Carregando descrição...
+            </div>
+            
+            <div class="profile-actions" id="profile-actions">
+                <!-- Botões de ação serão adicionados dinamicamente -->
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 A RPG Game. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/security.js"></script>
+    <script src="/js/animations.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Verificar autenticação
+            const user = getSessionUser();
+            
+            if (!user) {
+                // Usuário não autenticado, redirecionar para login
+                window.location.href = '/login.html';
+                return;
+            }
+            
+            // Mostrar link de admin se for administrador
+            const adminLink = document.querySelector('.admin-link');
+            if (adminLink && user.is_admin) {
+                adminLink.style.display = 'inline-block';
+            }
+            
+            // Obter nome de usuário da URL
+            const urlParams = new URLSearchParams(window.location.search);
+            let username = urlParams.get('username');
+            
+            // Se não houver username na URL, mostrar o próprio perfil
+            if (!username) {
+                username = user.username;
+            }
+            
+            try {
+                // Carregar dados do perfil
+                const profile = await fetchUserProfile(username);
+                
+                // Atualizar título da página
+                document.title = `${profile.username} - A RPG Game`;
+                
+                // Atualizar elementos do perfil
+                document.getElementById('profile-username').textContent = profile.username;
+                document.getElementById('profile-likes').textContent = profile.likes;
+                document.getElementById('profile-date').textContent = formatDate(profile.created_at);
+                
+                // Atualizar status online (simulado)
+                const isOnline = Math.random() > 0.5;
+                const statusIndicator = document.getElementById('status-indicator');
+                const statusText = document.getElementById('status-text');
+                
+                if (isOnline) {
+                    statusIndicator.classList.remove('status-offline');
+                    statusIndicator.classList.add('status-online');
+                    statusText.textContent = 'Online';
+                } else {
+                    statusIndicator.classList.remove('status-online');
+                    statusIndicator.classList.add('status-offline');
+                    statusText.textContent = 'Offline';
+                }
+                
+                // Atualizar descrição
+                const descriptionElement = document.getElementById('profile-description');
+                if (profile.description) {
+                    descriptionElement.textContent = profile.description;
+                } else {
+                    descriptionElement.textContent = 'Este usuário ainda não adicionou uma descrição.';
+                    descriptionElement.style.fontStyle = 'italic';
+                    descriptionElement.style.color = 'rgba(255, 255, 255, 0.6)';
+                }
+                
+                // Atualizar imagem de perfil
+                const profileImage = document.getElementById('profile-image');
+                if (profile.profile_image) {
+                    profileImage.src = `/img/${profile.profile_image}`;
+                }
+                
+                // Adicionar badges (simulado)
+                const badgesContainer = document.getElementById('profile-badges');
+                
+                // Limpar badges existentes
+                badgesContainer.innerHTML = '';
+                
+                // Adicionar badges baseadas em conquistas simuladas
+                const badges = [
+                    { icon: 'fa-trophy', name: 'Aventureiro Iniciante', condition: true },
+                    { icon: 'fa-medal', name: 'Explorador de Masmorras', condition: profile.likes >= 30 },
+                    { icon: 'fa-crown', name: 'Membro Premium', condition: Math.random() > 0.7 },
+                    { icon: 'fa-star', name: 'Contribuidor Ativo', condition: Math.random() > 0.5 }
+                ];
+                
+                badges.forEach(badge => {
+                    if (badge.condition) {
+                        const badgeElement = document.createElement('div');
+                        badgeElement.className = 'profile-badge';
+                        badgeElement.innerHTML = `<i class="fas ${badge.icon}"></i> ${badge.name}`;
+                        badgesContainer.appendChild(badgeElement);
+                    }
+                });
+                
+                // Adicionar botões de ação
+                const actionsContainer = document.getElementById('profile-actions');
+                
+                // Limpar ações existentes
+                actionsContainer.innerHTML = '';
+                
+                // Se não for o próprio perfil, mostrar botão de like
+                if (user.username !== profile.username) {
+                    // Verificar se o usuário já deu like neste perfil
+                    const hasLiked = profile.likedBy && profile.likedBy.includes(user.id);
+                    
+                    const likeButton = document.createElement('button');
+                    likeButton.className = `btn like-button ${hasLiked ? 'liked' : ''}`;
+                    likeButton.innerHTML = `
+                        <i class="fas fa-heart"></i>
+                        <span class="like-count">${profile.likes}</span>
+                        ${hasLiked ? 'Curtido' : 'Curtir'}
+                    `;
+                    
+                    if (!hasLiked) {
+                        likeButton.addEventListener('click', async function() {
+                            try {
+                                // Atualizar UI imediatamente para feedback rápido
+                                this.classList.add('liked');
+                                this.querySelector('i').classList.add('heart-beat');
+                                
+                                const likeCount = this.querySelector('.like-count');
+                                const newLikes = parseInt(likeCount.textContent) + 1;
+                                likeCount.textContent = newLikes;
+                                document.getElementById('profile-likes').textContent = newLikes;
+                                
+                                this.innerHTML = `
+                                    <i class="fas fa-heart"></i>
+                                    <span class="like-count">${newLikes}</span>
+                                    Curtido
+                                `;
+                                
+                                // Enviar like para o servidor (simulado)
+                                await likeUserProfile(profile.id);
+                                
+                                // Mostrar feedback
+                                showAlert('Você curtiu este perfil!', 'success');
+                                
+                            } catch (error) {
+                                console.error('Erro ao dar like:', error);
+                                showAlert('Erro ao processar like. Tente novamente.', 'error');
+                                
+                                // Reverter UI em caso de erro
+                                this.classList.remove('liked');
+                                const likeCount = this.querySelector('.like-count');
+                                const newLikes = parseInt(likeCount.textContent) - 1;
+                                likeCount.textContent = newLikes;
+                                document.getElementById('profile-likes').textContent = newLikes;
+                            }
+                        });
+                    }
+                    
+                    actionsContainer.appendChild(likeButton);
+                }
+                
+                // Se for o próprio perfil, mostrar botão de edição
+                if (user.username === profile.username) {
+                    const editButton = document.createElement('a');
+                    editButton.className = 'btn';
+                    editButton.href = '/edit-profile.html';
+                    editButton.innerHTML = '<i class="fas fa-edit"></i> Editar Perfil';
+                    
+                    actionsContainer.appendChild(editButton);
+                }
+                
+                // Adicionar botão para voltar à lista de usuários
+                const backButton = document.createElement('a');
+                backButton.className = 'btn';
+                backButton.href = '/users.html';
+                backButton.innerHTML = '<i class="fas fa-users"></i> Ver Todos Usuários';
+                
+                actionsContainer.appendChild(backButton);
+                
+            } catch (error) {
+                console.error('Erro ao carregar perfil:', error);
+                document.getElementById('profile-username').textContent = 'Perfil não encontrado';
+                document.getElementById('profile-description').textContent = 'Não foi possível carregar este perfil.';
+                document.getElementById('profile-description').style.color = 'var(--error-color)';
+            }
+        });
+        
+        // Função para buscar perfil do usuário
+        async function fetchUserProfile(username) {
+            // Simular delay de rede
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            // Em um ambiente real, isso seria uma chamada à API
+            // Retornar dados simulados para demonstração
+            return {
+                id: 1,
+                username: username,
+                description: 'Olá! Sou um jogador apaixonado por RPG e aventuras. Adoro explorar mundos fantásticos e criar histórias épicas com meus personagens.',
+                profile_image: 'default.png',
+                created_at: '2025-01-15T10:30:00Z',
+                likes: 42,
+                likedBy: [2, 3, 5]
+            };
+        }
+        
+        // Função para dar like em um perfil
+        async function likeUserProfile(userId) {
+            // Simular delay de rede
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Simular sucesso ou falha aleatória (90% de sucesso)
+            const isSuccess = Math.random() > 0.1;
+            
+            if (!isSuccess) {
+                throw new Error('Falha ao dar like no perfil');
+            }
+            
+            // Em um ambiente real, isso seria uma chamada à API
+            console.log(`Like enviado para o perfil ${userId}`);
+            
+            return { success: true };
+        }
+        
+        // Função para formatar data
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pt-BR');
+        }
+    </script>
+</body>
+</html>

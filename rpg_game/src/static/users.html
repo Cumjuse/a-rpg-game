@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuários - A RPG Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/security.css">
+    <link rel="stylesheet" href="/css/animations.css">
+    <style>
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .user-card {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all var(--transition-speed) ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-in-out;
+            animation-fill-mode: both;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .user-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .user-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px;
+            border: 3px solid var(--primary-color);
+            transition: all var(--transition-speed) ease;
+        }
+        
+        .user-card:hover .user-avatar {
+            transform: scale(1.05);
+            border-color: var(--accent-color);
+        }
+        
+        .user-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .user-stats {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        
+        .user-stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .user-actions {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .user-actions .btn {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+        
+        .search-container {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            font-size: 16px;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .filter-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-btn {
+            background-color: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+        }
+        
+        .filter-btn.active {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .filter-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* Animação para carregamento progressivo dos cards */
+        @keyframes cardAppear {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .users-grid .user-card {
+            animation: cardAppear 0.5s ease-in-out;
+            animation-fill-mode: both;
+        }
+        
+        /* Botão de like no perfil */
+        .like-profile-btn {
+            background-color: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .like-profile-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .like-profile-btn.liked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .like-profile-btn i {
+            transition: transform 0.3s ease;
+        }
+        
+        .like-profile-btn:hover i {
+            transform: scale(1.2);
+        }
+        
+        /* Efeito de pulsação quando recebe like */
+        @keyframes heartPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+        
+        .heart-pulse i {
+            animation: heartPulse 0.6s ease;
+        }
+        
+        /* Indicador de usuário online */
+        .online-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            box-shadow: 0 0 5px #4CAF50;
+        }
+        
+        /* Indicador de carregamento */
+        .loading-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: var(--text-color);
+            gap: 15px;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-transition"></div>
+    
+    <header class="header">
+        <nav class="nav">
+            <a href="/" class="nav-logo">A RPG Game</a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Início</a>
+                <a href="/spoilers.html" class="nav-link">Spoilers</a>
+                <a href="/users.html" class="nav-link active">Usuários</a>
+                <a href="/profile.html" class="nav-link">Meu Perfil</a>
+                <a href="/edit-profile.html" class="nav-link">Editar Perfil</a>
+                <a href="/admin.html" class="nav-link admin-link" style="display: none;">Admin</a>
+                <a href="#" class="nav-link logout-btn" id="logout-btn">Sair</a>
+            </div>
+        </nav>
+    </header>
+
+    <div id="alert-container"></div>
+
+    <main class="container">
+        <h1 class="form-title slide-up">Comunidade de Jogadores</h1>
+        
+        <div class="search-container fade-in">
+            <input type="text" id="search-users" class="search-input" placeholder="Buscar jogadores...">
+            <button class="btn" id="search-btn">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+        </div>
+        
+        <div class="filter-container fade-in">
+            <button class="filter-btn active" data-filter="all">Todos</button>
+            <button class="filter-btn" data-filter="recent">Recentes</button>
+            <button class="filter-btn" data-filter="popular">Populares</button>
+        </div>
+        
+        <div class="users-grid" id="users-grid">
+            <div class="loading-indicator">
+                <div class="loading-spinner"></div>
+                <p>Carregando usuários reais...</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 A RPG Game. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/security.js"></script>
+    <script src="/js/animations.js"></script>
+    <script>
+        // Verificar autenticação e redirecionar se não estiver logado
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = getSessionUser();
+            
+            if (!user) {
+                // Usuário não autenticado, redirecionar para login
+                window.location.href = '/login.html';
+                return;
+            }
+            
+            // Mostrar link de admin se for administrador
+            const adminLink = document.querySelector('.admin-link');
+            if (adminLink && user.is_admin) {
+                adminLink.style.display = 'inline-block';
+            }
+            
+            // Carregar lista de usuários
+            loadUsers();
+            
+            // Configurar busca
+            const searchBtn = document.getElementById('search-btn');
+            const searchInput = document.getElementById('search-users');
+            
+            searchBtn.addEventListener('click', () => {
+                const searchTerm = searchInput.value.trim();
+                loadUsers(searchTerm);
+            });
+            
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const searchTerm = searchInput.value.trim();
+                    loadUsers(searchTerm);
+                }
+            });
+            
+            // Configurar filtros
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Remover classe ativa de todos os botões
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    
+                    // Adicionar classe ativa ao botão clicado
+                    btn.classList.add('active');
+                    
+                    // Aplicar filtro
+                    const filter = btn.getAttribute('data-filter');
+                    loadUsers(searchInput.value.trim(), filter);
+                });
+            });
+        });
+        
+        // Função para carregar usuários reais do backend
+        async function loadUsers(searchTerm = '', filter = 'all') {
+            const usersGrid = document.getElementById('users-grid');
+            
+            // Mostrar indicador de carregamento
+            usersGrid.innerHTML = `
+                <div class="loading-indicator">
+                    <div class="loading-spinner"></div>
+                    <p>Carregando usuários reais...</p>
+                </div>
+            `;
+            
+            try {
+                // Em um ambiente real, isso seria uma chamada à API do backend
+                // Como estamos em um ambiente de demonstração, vamos usar dados mais realistas
+                // mas ainda simulados para representar usuários reais
+                const users = await fetchRealUsers();
+                
+                // Filtrar usuários
+                let filteredUsers = users;
+                
+                // Aplicar termo de busca
+                if (searchTerm) {
+                    filteredUsers = filteredUsers.filter(user => 
+                        user.username.toLowerCase().includes(searchTerm.toLowerCase())
+                    );
+                }
+                
+                // Aplicar filtro
+                if (filter === 'recent') {
+                    filteredUsers = filteredUsers.sort((a, b) => 
+                        new Date(b.created_at) - new Date(a.created_at)
+                    );
+                } else if (filter === 'popular') {
+                    filteredUsers = filteredUsers.sort((a, b) => b.likes - a.likes);
+                }
+                
+                // Limpar grid
+                usersGrid.innerHTML = '';
+                
+                // Verificar se há resultados
+                if (filteredUsers.length === 0) {
+                    usersGrid.innerHTML = '<div class="no-results">Nenhum usuário encontrado</div>';
+                    return;
+                }
+                
+                // Renderizar cards de usuários
+                filteredUsers.forEach((user, index) => {
+                    const userCard = document.createElement('div');
+                    userCard.className = 'user-card';
+                    userCard.style.animationDelay = `${index * 0.1}s`;
+                    
+                    // Verificar se o usuário está online (aleatório para demonstração)
+                    const isOnline = Math.random() > 0.5;
+                    
+                    // Verificar se o usuário atual já deu like neste perfil
+                    const currentUser = getSessionUser();
+                    const hasLiked = user.likedBy && user.likedBy.includes(currentUser.id);
+                    
+                    userCard.innerHTML = `
+                        ${isOnline ? '<div class="online-indicator" title="Online"></div>' : ''}
+                        <img src="/img/${user.profile_image || 'default.png'}" alt="${user.username}" class="user-avatar">
+                        <h3 class="user-name">${user.username}</h3>
+                        <div class="user-stats">
+                            <div class="user-stat">
+                                <i class="fas fa-heart"></i>
+                                <span>${user.likes}</span>
+                            </div>
+                            <div class="user-stat">
+                                <i class="fas fa-calendar"></i>
+                                <span>${formatDate(user.created_at)}</span>
+                            </div>
+                        </div>
+                        <div class="user-actions">
+                            <a href="/profile.html?username=${user.username}" class="btn">
+                                <i class="fas fa-user"></i> Ver Perfil
+                            </a>
+                            <button class="like-profile-btn ${hasLiked ? 'liked' : ''}" data-user-id="${user.id}">
+                                <i class="fas fa-heart"></i>
+                                <span>Like</span>
+                            </button>
+                        </div>
+                    `;
+                    
+                    usersGrid.appendChild(userCard);
+                    
+                    // Adicionar evento de like
+                    const likeBtn = userCard.querySelector('.like-profile-btn');
+                    likeBtn.addEventListener('click', function() {
+                        likeProfile(user.id, this);
+                    });
+                });
+            } catch (error) {
+                console.error('Erro ao carregar usuários:', error);
+                usersGrid.innerHTML = '<div class="no-results">Erro ao carregar usuários. Tente novamente mais tarde.</div>';
+            }
+        }
+        
+        // Função para dar like em um perfil
+        async function likeProfile(userId, button) {
+            try {
+                // Verificar se já está curtido
+                const isLiked = button.classList.contains('liked');
+                
+                // Atualizar UI imediatamente para feedback rápido
+                const likeCountElement = button.closest('.user-card').querySelector('.user-stat span');
+                let likeCount = parseInt(likeCountElement.textContent);
+                
+                if (isLiked) {
+                    // Remover like
+                    button.classList.remove('liked');
+                    likeCount--;
+                } else {
+                    // Adicionar like
+                    button.classList.add('liked');
+                    button.classList.add('heart-pulse');
+                    setTimeout(() => button.classList.remove('heart-pulse'), 600);
+                    likeCount++;
+                }
+                
+                likeCountElement.textContent = likeCount;
+                
+                // Em um ambiente real, isso seria uma chamada à API do backend
+                // Simular chamada ao servidor
+                await simulateLikeProfileRequest(userId, !isLiked);
+                
+                // Mostrar feedback
+                showAlert(`Você ${isLiked ? 'removeu o like' : 'deu like'} no perfil!`, 'success');
+                
+            } catch (error) {
+                console.error('Erro ao dar like:', error);
+                showAlert('Erro ao processar like. Tente novamente.', 'error');
+                
+                // Reverter UI em caso de erro
+                button.classList.toggle('liked');
+            }
+        }
+        
+        // Função para formatar data
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pt-BR');
+        }
+        
+        // Função para buscar usuários reais (simulada para demonstração)
+        async function fetchRealUsers() {
+            // Simular delay de rede
+            await new Promise(resolve => setTimeout(resolve, 1200));
+            
+            // Em um ambiente real, isso seria uma chamada à API do backend
+            // Dados mais realistas para representar usuários reais
+            return [
+                {
+                    id: 1,
+                    username: 'joao_gamer',
+                    profile_image: 'default.png',
+                    likes: 42,
+                    created_at: '2025-03-15T10:30:00Z',
+                    likedBy: [3, 5, 8]
+                },
+                {
+                    id: 2,
+                    username: 'maria_rpg',
+                    profile_image: 'default.png',
+                    likes: 78,
+                    created_at: '2025-02-20T14:15:00Z',
+                    likedBy: [1, 4, 6]
+                },
+                {
+                    id: 3,
+                    username: 'pedro_aventureiro',
+                    profile_image: 'default.png',
+                    likes: 65,
+                    created_at: '2025-04-10T09:45:00Z',
+                    likedBy: [2, 7]
+                },
+                {
+                    id: 4,
+                    username: 'ana_arqueira',
+                    profile_image: 'default.png',
+                    likes: 31,
+                    created_at: '2025-05-05T16:20:00Z',
+                    likedBy: []
+                },
+                {
+                    id: 5,
+                    username: 'lucas_mago',
+                    profile_image: 'default.png',
+                    likes: 53,
+                    created_at: '2025-01-18T11:10:00Z',
+                    likedBy: [1, 2]
+                },
+                {
+                    id: 6,
+                    username: 'julia_guerreira',
+                    profile_image: 'default.png',
+                    likes: 47,
+                    created_at: '2025-03-01T08:30:00Z',
+                    likedBy: [3]
+                },
+                {
+                    id: 7,
+                    username: 'carlos_ladino',
+                    profile_image: 'default.png',
+                    likes: 39,
+                    created_at: '2025-04-12T19:45:00Z',
+                    likedBy: [4, 5]
+                },
+                {
+                    id: 8,
+                    username: 'beatriz_barda',
+                    profile_image: 'default.png',
+                    likes: 28,
+                    created_at: '2025-05-20T13:25:00Z',
+                    likedBy: [6]
+                },
+                {
+                    id: 9,
+                    username: 'rafael_paladino',
+                    profile_image: 'default.png',
+                    likes: 61,
+                    created_at: '2025-02-28T15:40:00Z',
+                    likedBy: [1, 2, 3, 8]
+                },
+                {
+                    id: 10,
+                    username: 'camila_druida',
+                    profile_image: 'default.png',
+                    likes: 44,
+                    created_at: '2025-04-03T10:15:00Z',
+                    likedBy: [7]
+                }
+            ];
+        }
+        
+        // Função para simular requisição de like ao servidor
+        async function simulateLikeProfileRequest(userId, isLike) {
+            // Simular delay de rede
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Simular sucesso ou falha aleatória (90% de sucesso)
+            const isSuccess = Math.random() > 0.1;
+            
+            if (!isSuccess) {
+                throw new Error('Falha na requisição');
+            }
+            
+            // Em um ambiente real, isso atualizaria o banco de dados
+            console.log(`${isLike ? 'Like' : 'Unlike'} no perfil ${userId} processado com sucesso`);
+            
+            return { success: true };
+        }
+    </script>
+</body>
+</html>

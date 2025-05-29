@@ -1,0 +1,150 @@
+/* Estilos adicionais para segurança e validação */
+
+/* Campos com erro */
+.input-error {
+  border: 1px solid var(--error-color) !important;
+  box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.2) !important;
+}
+
+.field-error {
+  color: var(--error-color);
+  font-size: 12px;
+  margin-top: 5px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Estilos para proteção de formulários */
+.form-protected {
+  position: relative;
+}
+
+.form-protected::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-speed) ease;
+}
+
+.form-protected.locked::before {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.form-protected.locked::after {
+  content: 'Formulário bloqueado temporariamente';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-weight: 600;
+  z-index: 11;
+}
+
+/* Indicador de força de senha */
+.password-strength {
+  height: 5px;
+  margin-top: 5px;
+  border-radius: 2px;
+  transition: all var(--transition-speed) ease;
+}
+
+.password-strength.weak {
+  width: 30%;
+  background-color: var(--error-color);
+}
+
+.password-strength.medium {
+  width: 60%;
+  background-color: #FFC107;
+}
+
+.password-strength.strong {
+  width: 100%;
+  background-color: var(--success-color);
+}
+
+/* Animação de carregamento para ações de segurança */
+.security-loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-left: 10px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Estilo para botões desabilitados */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Estilo para elementos protegidos */
+.protected-content {
+  filter: blur(5px);
+  user-select: none;
+  transition: filter var(--transition-speed) ease;
+}
+
+.protected-content.revealed {
+  filter: none;
+}
+
+/* Animação para feedback de segurança */
+@keyframes securityPulse {
+  0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+}
+
+.security-success {
+  animation: securityPulse 1.5s ease-in-out;
+}
+
+/* Estilo para verificação de dois fatores (simulado) */
+.two-factor-container {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.two-factor-input {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.two-factor-input input {
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  font-size: 18px;
+  border-radius: 4px;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-color);
+}
+
+.two-factor-input input:focus {
+  outline: none;
+  background-color: rgba(255, 255, 255, 0.2);
+}
